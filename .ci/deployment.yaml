@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whoami-dp
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: whoami
+  template:
+    metadata:
+      labels:
+        app: whoami
+    spec:
+      containers:
+      - name: whoami
+        image: registry.gitlab.com/vozerov/whoami-local:##TAG##
+        args: ["-port", "8080"]
+      - name: nginx
+        image: nginx
+        volumeMounts:
+        - mountPath: /etc/nginx/conf.d/server.conf
+          readOnly: true
+          name: nginx-conf
+          subPath: server.conf
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-prod
+
+

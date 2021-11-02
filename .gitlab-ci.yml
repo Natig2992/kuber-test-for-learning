@@ -1,5 +1,6 @@
 stages:
   - build
+  - deploy
 
 build:
   stage: build
@@ -15,3 +16,17 @@ build:
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
       --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}"
 
+deployToProd:
+  stage: deploy
+  image: vozerov/helm-deployer
+  script:
+    - yc config profile create sa-profile
+    - yc config set service-account-key $YC_KEY
+    - yc config set cloud-id ${YC_CLOUD_ID}
+    - yc config set folder-id ${YC_FOLDER_ID}
+    - yc container cluster get-credentials web-test --external
+    - sed -i "s/##TAG##/${CI_COMMIT_SHORT_SHA}/g" .ci/deployment.yaml
+    - kubectl apply -n test -f .ci/cm.yaml
+    - kubectl apply -n test -f .ci/deployment.yaml
+    - kubectl apply -n test -f .ci/service.yaml
+    - kubectl apply -n test -f .ci/ing.yaml
