@@ -5,5 +5,5 @@ ingress:
   hosts:
     - host: webinar.vasyan.kis.im
       paths:
-        - "/"
+        - path: /
   tls: []
