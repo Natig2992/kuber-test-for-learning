@@ -25,8 +25,4 @@ deployToProd:
     - yc config set cloud-id ${YC_CLOUD_ID}
     - yc config set folder-id ${YC_FOLDER_ID}
     - yc container cluster get-credentials web-test --external
-    - sed -i "s/##TAG##/${CI_COMMIT_SHORT_SHA}/g" .ci/deployment.yaml
-    - kubectl apply -n test -f .ci/cm.yaml
-    - kubectl apply -n test -f .ci/deployment.yaml
-    - kubectl apply -n test -f .ci/service.yaml
-    - kubectl apply -n test -f .ci/ing.yaml
+    - cd .ci2; helm upgrade --install whoami -n prod -f values.prod.yaml --set image.tag=${CI_COMMIT_SHORT_SHA} --atomic --wait ./whoami

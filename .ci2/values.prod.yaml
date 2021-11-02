@@ -1,0 +1,9 @@
+replicaCount: 3
+
+ingress:
+  enabled: true
+  hosts:
+    - host: webinar.vasyan.kis.im
+      paths:
+        - /
+  tls: []
